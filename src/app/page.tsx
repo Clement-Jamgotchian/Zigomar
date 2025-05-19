@@ -14,11 +14,11 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { Moon, Sun } from 'lucide-react';
+import { Maximize2, Moon, Sun, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from 'next-themes';
-import { BackgroundBeams } from '@/components/ui/background-beams';
 import { AuroraText } from '@/components/magicui/aurora-text';
+import { useState } from 'react';
 
 function ThemeToggle() {
   const { theme, setTheme } = useTheme();
@@ -27,7 +27,7 @@ function ThemeToggle() {
     <Button
       variant="outline"
       size="icon"
-      className="fixed right-4 top-4 z-50 rounded-full"
+      className="fixed right-4 top-4 z-50 rounded-full cursor-pointer"
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
     >
       <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
@@ -37,10 +37,37 @@ function ThemeToggle() {
   );
 }
 
+function FullScreenMap({ onClose }: { onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-[100] flex flex-col p-4">
+      <Button
+        onClick={onClose}
+        variant="ghost"
+        size="icon"
+        className="absolute bg-primary text-primary-foreground right-2 top-2 z-[101] cursor-pointer hover:scale-110"
+      >
+        <X className="h-6 w-6" />
+        <span className="sr-only">Fermer</span>
+      </Button>
+      <div className="flex-1 w-full h-full">
+        <iframe
+          src="https://www.konectis.com/embed/7e9da59bde911fdac741ba5a57d7480f"
+          frameBorder="0"
+          className="h-full w-full rounded-xl"
+          title="Suivi de trajet en bateau - Plein écran"
+        />
+      </div>
+    </div>
+  );
+}
+
 export default function Page() {
+  const [isFullScreen, setIsFullScreen] = useState(false);
+
   return (
     <SidebarProvider>
       <ThemeToggle />
+      {isFullScreen && <FullScreenMap onClose={() => setIsFullScreen(false)} />}
       <AppSidebar />
       <SidebarInset className="relative">
         <header className="flex h-14 shrink-0 items-center gap-2">
@@ -62,7 +89,7 @@ export default function Page() {
           <div className="mx-auto w-full max-w-3xl space-y-8">
             <div className="text-center space-y-4">
               <h1 className="text-3xl font-bold">
-                Voyage en mer avec{' '}
+                Voyage en Atlantique avec{' '}
                 <AuroraText className="text-4xl">Zigomar</AuroraText>
               </h1>
               <p className="text-muted-foreground max-w-2xl mx-auto">
@@ -74,23 +101,33 @@ export default function Page() {
               </p>
             </div>
 
-            <div className="h-[60vh] w-full rounded-xl bg-muted/50 ">
+            <div className="h-[60vh] w-full rounded-xl bg-muted/50 relative">
               <iframe
                 src="https://www.konectis.com/embed/7e9da59bde911fdac741ba5a57d7480f"
                 frameBorder="0"
                 className="h-full w-full rounded-xl"
                 title="Suivi de trajet en bateau"
               />
+              <Button
+                onClick={() => setIsFullScreen(true)}
+                className="absolute bottom-6 right-16 bg-primary cursor-pointer backdrop-blur-sm hover:bg-primary/90"
+                size="sm"
+              >
+                <Maximize2 className="h-4 w-4 mr-2" />
+                Plein écran
+              </Button>
             </div>
 
             <div className="prose dark:prose-invert max-w-none">
-              <h2>À propos de notre voyage</h2>
+              <h2 className="text-2xl font-bold">À propos de notre voyage</h2>
               <p>
-                Notre périple a débuté le 15 juin 2023 depuis le port de
-                Marseille. Avec Zigomar, notre fidèle voilier, nous explorons la
-                Méditerranée et partageons cette aventure avec vous. La carte
-                ci-dessus est mise à jour régulièrement pour vous permettre de
-                suivre notre progression.
+                Notre périple en Atlantique débutera le{' '}
+                <span className="font-bold text-primary">25 mai 2025</span>{' '}
+                depuis le port de Lorient. Avec Zigomar, notre fidèle voilier,
+                nous explorons l&apos;Atlantique direction les Açores et
+                partageons cette aventure avec vous. La carte ci-dessus est mise
+                à jour régulièrement pour vous permettre de suivre notre
+                progression.
               </p>
               <p>
                 N&apos;hésitez pas à revenir sur cette page pour voir notre
@@ -100,7 +137,7 @@ export default function Page() {
             </div>
           </div>
         </div>
-        <BackgroundBeams />
+        {/* <BackgroundBeams /> */}
       </SidebarInset>
     </SidebarProvider>
   );
